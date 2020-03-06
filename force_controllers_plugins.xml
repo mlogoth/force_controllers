@@ -1,0 +1,13 @@
+<library path="lib/libforce_controllers">
+
+  <class name="force_controllers/admittance_controller"
+    type="force_controllers::admittance_controller"
+    base_class_type="controller_interface::ControllerBase">
+  </class>
+
+  <class name="force_controllers/impedance_controller"
+    type="force_controllers::impedance_controller"
+    base_class_type="controller_interface::ControllerBase">
+  </class>
+
+</library>

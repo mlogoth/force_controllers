@@ -1,0 +1,44 @@
+# Dummy Controller -----------------------------------
+
+j2n7_mod:
+
+  DummyController:
+    type: variable_admittance_slippage_controller/DummyController #variable_impedance_slippage_controller/DummyController
+    dt: 0.03
+    joints: [j2n7_mod_joint_1,j2n7_mod_joint_2,j2n7_mod_joint_3,j2n7_mod_joint_4,j2n7_mod_joint_5,j2n7_mod_joint_6,j2n7_mod_joint_7]
+    ft_sensor:
+      - ft_sensor
+    robot_description: /robot_description
+    # Select the control Type Among:
+    # - Impedance: Classical Impedance Control
+    # - VarImpedance: Slippage Variable Impedance Control
+    # - Gravity: Gravity Compensation
+    # - PD: PD Controller
+    control_type: pd
+    # Select the desired control space
+    # - Cartesian: Cartesian space control
+    # - Joint: Joint space control
+    control_space: cartesian
+    
+    # Gains of the Controller
+    # Joint Space Control gains
+    # Cartesian Control Gains
+    gains:
+      joints:
+        Md: [1.0,1.0,1.0,1.0,1.0,1.0,1.0]
+        Dd: [3.1,3.1,3.1,3.1,3.1,3.1,6.10] #[0.5,0.5,0.5,0.5,0.5,0.5,0.5]
+        Kd: [100.0,100.0,100.0,100.0,100.0,100.0,800.0] #[10.0,20.0,10.0,10.0,10.0,20.0,0.0]
+      cartesian:
+        Md: [1.0,1.0,1.0,1.0,1.0,1.0]
+        Dd: [6.0,6.0,6.0,10.0,10.0,10.0]
+        Kd: [60.0,60.0,60.0,25.0,25.0,25.0]
+        Wq: [5.0,5.0,5.0,5.0,5.0,5.0,5.0]
+    trajectory:
+      A: [0.0,0.0,0.0]
+      omega: [0.3,0.3,0.3]
+
+    joint_limits:
+      lower: [rad(-2*pi), rad(30/180*pi) , rad(-5*pi/4),  rad(30/180*pi) ,rad(-2*pi), rad(-2*pi), rad(-2*pi)]
+      upper: [rad(2*pi),  rad(330/180*pi), rad(5*pi/4),  rad(330/180*pi)   ,rad(2*pi),  rad(2*pi),  rad(2*pi)]
+      activation_percentage: 0.08
+      max_damping_gains: [40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0]
