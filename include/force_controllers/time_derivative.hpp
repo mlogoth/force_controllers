@@ -6,6 +6,8 @@
 #include <string>
 #include <fstream>
 #include <stdio.h>
+#include <eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 #include <math.h>
 template <typename var_type, typename time_type>
 class timeDerivative
@@ -28,9 +30,15 @@ public:
 			_is_first_time = false;
 			previous_time_ = time;
 			previous_variable_ = var;
-			return 0;
+			// if (std::is_same<var_type, Eigen::Matrix<double,-1,-1>>::value || std::is_same<var_type, Eigen::Matrix<float,-1,-1>>::value)
+			// 	return var.Zero();
+			// else
+				return var_type{};
+			
 		}
 		var_type der = (var_type)(var - previous_variable_ / (time - previous_time_));
+		std::cout<<"DT DERIVATIVE: "<<(time-previous_time_)<<std::endl;
+		std::cout<<"DT DERIVATIVE: "<<(time-previous_time_)<<std::endl;
 		previous_time_ = time;
 		previous_variable_ = var;
 		return der;

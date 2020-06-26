@@ -23,7 +23,7 @@ j2n7_mod:
     # - variable: Slippage Variable Impedance Control
     # - Gravity: Gravity Compensation
     # - PD: PD Controller
-    control_type: classical
+    control_type: gravity
     # Select the desired control space
     # - Cartesian: Cartesian space control
     # - Joint: Joint space control
@@ -39,9 +39,9 @@ j2n7_mod:
         Kd: [600.0,600.0,600.0,600.0,3000.0,3000.0,5000.0]
       cartesian:
         Md: [1.0,1.0,1.0,1.0,1.0,1.0]
-        Dd: [0.05,0.05,0.05,0.05,0.05,0.05]
-        Kd: [6.0,10.0,1.0,1.0,1.0,1.0]
-        Wq: [6.0,6.0,6.0,6.0,30.0,30.0,50.0]
+        Dd: [1.05,1.05,1.05,1.05,1.05,1.05]
+        Kd: [6.0,6.0,6.0,6.0,6.0,6.0]
+        Wq: [1.0,1.0,1.0,1.0,1.0,1.0,1.0]
     trajectory:
       A: [0.0,0.00,0.0]
       omega: [0.0,0.0,0.0]
@@ -50,7 +50,6 @@ j2n7_mod:
       upper: [rad(2*pi),  rad(330/180*pi), rad(pi/4),  rad(330/180*pi)   ,rad(2*pi),  rad(2*pi),  rad(2*pi)]
       activation_percentage: 0.2
       max_damping_gains: [10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0]
-
 
   admittance_controller:
     type: force_controllers/admittance_controller
@@ -81,7 +80,7 @@ j2n7_mod:
         Md: [1.0,1.0,1.0,1.0,1.0,1.0]
         Dd: [0.05,0.05,0.05,0.05,0.05,0.05]
         Kd: [6.0,10.0,1.0,1.0,1.0,1.0]
-        Wq: [6.0,6.0,6.0,6.0,30.0,30.0,50.0]
+        Wq: [6.0,6.0,6.0,6.0,6.0,6.0,6.0]
     trajectory:
       A: [0.0,0.00,0.0]
       omega: [0.0,0.0,0.0]

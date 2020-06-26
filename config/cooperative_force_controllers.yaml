@@ -1,0 +1,171 @@
+# # Force Controller -----------------------------------
+# gazebo_ros_control:
+#    pid_gains:
+#      $(arg robot_1_prefix)_mico_joint_1: {p: 1.0, i: 0.01, d: 0.0}
+#      $(arg robot_1_prefix)_mico_joint_2: {p: 1.0, i: 0.01, d: 0.0}
+#      $(arg robot_1_prefix)_mico_joint_3: {p: 1.0, i: 0.01, d: 0.0}
+#      $(arg robot_1_prefix)_mico_joint_4: {p: 1.0, i: 0.01, d: 0.0}
+#      $(arg robot_1_prefix)_mico_joint_5: {p: 3.0, i: 0.01, d: 0.0}
+#      $(arg robot_1_prefix)_mico_joint_6: {p: 3.0, i: 0.01, d: 0.0}
+#      $(arg robot_1_prefix)_mico_joint_7: {p: 10.0, i: 0.01, d: 0.0}
+
+
+$(arg robot_1_prefix):
+
+  impedance_controller:
+    type: force_controllers/impedance_controller
+    joints: [$(arg robot_1_prefix)_platform_prismatic_x,
+      $(arg robot_1_prefix)_platform_prismatic_y,
+      $(arg robot_1_prefix)_platform_continuous_z,$(arg robot_1_prefix)_mico_joint_1,$(arg robot_1_prefix)_mico_joint_2,$(arg robot_1_prefix)_mico_joint_3,$(arg robot_1_prefix)_mico_joint_4,$(arg robot_1_prefix)_mico_joint_5,$(arg robot_1_prefix)_mico_joint_6]
+    ft_sensor:
+      topic_name: /$(arg robot_1_prefix)_mico_joint_6/ft_sensor
+      attached_link: $(arg robot_1_prefix)_mico_link_6
+    robot_description: /robot_description
+    kdl:
+      root: $(arg robot_1_prefix)_world
+      tip: $(arg robot_1_prefix)_mico_end_effector
+    # Select the control Type Among:
+    # - classical: Classical Impedance Control
+    # - variable: Slippage Variable Impedance Control
+    # - Gravity: Gravity Compensation
+    # - PD: PD Controller
+    control_type: classical
+    # Select the desired control space
+    # - Cartesian: Cartesian space control
+    # - Joint: Joint space control
+    control_space: cartesian
+    
+    # Gains of the Controller
+    # Joint Space Control gains
+    # Cartesian COntrol Gains
+    gains:
+      joints:
+        Md: [1.0,1.0,1.0,1.0,1.0,1.0]
+        Dd: [1.05,1.05,1.05,1.05,1.05,1.05]
+        Kd: [600.0,600.0,600.0,600.0,3000.0,3000.0]
+      cartesian:
+        Md: [1.0,1.0,1.0,1.0,1.0,1.0]
+        Dd: [1.05,1.05,1.05,1.05,1.05,1.05]
+        Kd: [6.0,6.0,6.0,6.0,6.0,6.0]
+        Wq: [1.0,1.0,1.0,1.0,1.0,1.0,1.0]
+    trajectory:
+      A: [0.0,0.00,0.0]
+      omega: [0.0,0.0,0.0]
+    joint_limits:
+      lower: [rad(-2*pi), rad(30/180*pi) , rad(-5*pi/4),  rad(30/180*pi) ,rad(-2*pi), rad(-2*pi)]
+      upper: [rad(2*pi),  rad(330/180*pi), rad(pi/4),  rad(330/180*pi)   ,rad(2*pi),  rad(2*pi)]
+      activation_percentage: 0.2
+      max_damping_gains: [10.0, 10.0, 10.0, 10.0, 10.0, 10.0]
+
+
+  admittance_controller:
+    type: force_controllers/admittance_controller
+    joints: [$(arg robot_1_prefix)_platform_prismatic_x,
+      $(arg robot_1_prefix)_platform_prismatic_y,
+      $(arg robot_1_prefix)_platform_continuous_z,$(arg robot_1_prefix)_mico_joint_1,$(arg robot_1_prefix)_mico_joint_2,$(arg robot_1_prefix)_mico_joint_3,$(arg robot_1_prefix)_mico_joint_4,$(arg robot_1_prefix)_mico_joint_5,$(arg robot_1_prefix)_mico_joint_6]
+    ft_sensor:
+      topic_name: /$(arg robot_1_prefix)_mico_joint_6/ft_sensor
+      attached_link: $(arg robot_1_prefix)_mico_link_6
+      compensate_link: [$(arg robot_1_prefix)_mico_link_6, $(arg robot_1_prefix)_mico_end_effector, $(arg robot_1_prefix)_mico_link_finger_1,$(arg robot_1_prefix)_mico_link_finger_tip_1, $(arg robot_1_prefix)_mico_link_finger_2,$(arg robot_1_prefix)_mico_link_finger_tip_2]
+    robot_description: /robot_description
+    kdl:
+      root: $(arg robot_1_prefix)_world
+      tip: $(arg robot_1_prefix)_mico_end_effector
+      finger_1: $(arg robot_1_prefix)_mico_link_finger_tip_1
+      finger_2: $(arg robot_1_prefix)_mico_link_finger_tip_2
+    robot_description: /robot_description
+    # Select the control Type Among:
+    # - classical: Classical Admittance Control
+    # - variable: Slippage Variable Admittance Control
+    # - Gravity: Gravity Compensation
+    # - PD: PD Controller
+    control_type: classical
+    # Select the desired control space
+    # - Cartesian: Cartesian space control
+    # - Joint: Joint space control
+    control_space: joint
+    
+    # Gains of the Controller
+    # Joint Space Control gains
+    # Cartesian COntrol Gains
+    gains:
+      force_gain: 1.00
+      joints:
+        Kplatform: &kplatform 55550.0 #10.0 #500.0 #300.0 #100
+        karm: &karm 55550.0 #10.0 #500.0 #500.0 #300
+        damping: &damping 5500.0  #0.0 #100.0 #10.0
+        mdarm: &vmass 1.0 #100.0
+        mdplat: &vmassplat 1.0 #100.0
+        Md: [*vmassplat,*vmassplat,*vmassplat,*vmass,*vmass,*vmass,*vmass,*vmass,*vmass]
+        Dd: [*damping,*damping,*damping,*damping,*damping,*damping,*damping,*damping,*damping]
+        Kd: [*kplatform,*kplatform,*kplatform,*karm, *karm, *karm, *karm, *karm, *karm]
+      cartesian:
+        Md: [1.0,1.0,1.0,1.0,1.0,1.0]
+        Dd: [0.05,0.05,0.05,0.05,0.05,0.05]
+        Kd: [6.0,10.0,1.0,1.0,1.0,1.0]
+        Wq: [6.0,6.0,6.0,6.0,6.0,6.0,6.0]
+    trajectory:
+      A: [0.0,0.00,0.0] #[1.0,0.00,0.0]
+      omega: [0.0,0.00,0.0] #[0.1,0.0,0.0]
+    joint_limits:
+      lower: [-300.0,-300.0,-3.0*pi ,rad(-2.0*pi), rad(30.0/180*pi) , rad(-5*pi/4),  rad(30/180*pi) ,rad(-2*pi), rad(-2*pi)]
+      upper: [300.0,300.0,3.0*pi, rad(2.0*pi),  rad(330.0/180*pi), rad(pi/4),  rad(330/180*pi)   ,rad(2*pi),  rad(2*pi)]
+      activation_percentage: 0.2
+      max_damping_gains: [10.0,10.0,10.0,10.0, 10.0, 10.0, 10.0, 10.0, 10.0]
+
+
+
+$(arg robot_2_prefix):
+  admittance_controller:
+    type: force_controllers/admittance_controller
+    joints: [$(arg robot_2_prefix)_platform_prismatic_x,
+      $(arg robot_2_prefix)_platform_prismatic_y,
+      $(arg robot_2_prefix)_platform_continuous_z,$(arg robot_2_prefix)_mico_joint_1,$(arg robot_2_prefix)_mico_joint_2,$(arg robot_2_prefix)_mico_joint_3,$(arg robot_2_prefix)_mico_joint_4,$(arg robot_2_prefix)_mico_joint_5,$(arg robot_2_prefix)_mico_joint_6]
+    ft_sensor:
+      topic_name: /$(arg robot_2_prefix)_mico_joint_6/ft_sensor
+      attached_link: $(arg robot_2_prefix)_mico_link_6
+      compensate_link: [$(arg robot_2_prefix)_mico_link_6, $(arg robot_2_prefix)_mico_end_effector, $(arg robot_2_prefix)_mico_link_finger_1,$(arg robot_2_prefix)_mico_link_finger_tip_1, $(arg robot_2_prefix)_mico_link_finger_2,$(arg robot_2_prefix)_mico_link_finger_tip_2]
+    robot_description: /robot_description
+    kdl:
+      root: $(arg robot_2_prefix)_world
+      tip: $(arg robot_2_prefix)_mico_end_effector
+      finger_1: $(arg robot_2_prefix)_mico_link_finger_tip_1
+      finger_2: $(arg robot_2_prefix)_mico_link_finger_tip_2
+    robot_description: /robot_description
+    # Select the control Type Among:
+    # - classical: Classical Admittance Control
+    # - variable: Slippage Variable Admittance Control
+    # - Gravity: Gravity Compensation
+    # - PD: PD Controller
+    control_type: classical
+    # Select the desired control space
+    # - Cartesian: Cartesian space control
+    # - Joint: Joint space control
+    control_space: joint
+    
+    # Gains of the Controller
+    # Joint Space Control gains
+    # Cartesian COntrol Gains
+    gains:
+      joints:
+        # Kplatform: &kplatform 500.0 #300.0 #100
+        # karm: &karm 500.0 #500.0 #300
+        # damping: &damping 100.0 #10.0
+        # mdarm: &vmass 100.0
+        # mdplat: &vmassplat 100.0
+        Md: [*vmassplat,*vmassplat,*vmassplat,*vmass,*vmass,*vmass,*vmass,*vmass,*vmass]
+        Dd: [*damping,*damping,*damping,*damping,*damping,*damping,*damping,*damping,*damping]
+        Kd: [*kplatform,*kplatform,*kplatform,*karm, *karm, *karm, *karm, *karm, *karm]
+      cartesian:
+        Md: [1.0,1.0,1.0,1.0,1.0,1.0]
+        Dd: [0.00,0.00,0.00,0.0,0.0,0.0]
+        Kd: [0.01,0.01,0.001,0.0,0.0,0.0]
+        Wq: [6.0,6.0,6.0,6.0,6.0,6.0,6.0]
+    trajectory:
+      A: [0.0,0.00,0.0] #[1.0,0.00,0.0]
+      omega: [0.0,0.00,0.0] #[0.1,0.0,0.0]
+    joint_limits:
+      lower: [-300.0,-300.0,-3.0*pi ,rad(-2.0*pi), rad(30.0/180*pi) , rad(-5*pi/4),  rad(30/180*pi) ,rad(-2*pi), rad(-2*pi)]
+      upper: [300.0,300.0,3.0*pi, rad(2.0*pi),  rad(330.0/180*pi), rad(pi/4),  rad(330/180*pi)   ,rad(2*pi),  rad(2*pi)]
+      activation_percentage: 0.2
+      max_damping_gains: [10.0,10.0,10.0,10.0, 10.0, 10.0, 10.0, 10.0, 10.0]

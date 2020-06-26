@@ -38,7 +38,9 @@ public:
 		 * @param ROS node handler n_
 		 * @param robotnamespace for the topics
 		*/
-	RobotState(ros::NodeHandle n_, int ndof_, std::string namespace_);
+	RobotState(ros::NodeHandle n_, int ndof_, std::string namespace_, std::string ft_topic_name="ft_sensor");	
+	RobotState(ros::NodeHandle n_,std::vector<std::string> _joint_names , std::string namespace_="", std::string ft_topic_name="ft_sensor");
+
 	RobotState(ros::NodeHandle n_, int ndof_);
 
 	// Read Joint States Function (Listener)

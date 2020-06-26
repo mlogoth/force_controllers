@@ -141,6 +141,7 @@ include_directories(
 add_library(${PROJECT_NAME}
     src/${PROJECT_NAME}/admittance_controller.cpp
     src/${PROJECT_NAME}/impedance_controller.cpp
+    src/${PROJECT_NAME}/read_parameter_values.cpp
     src/${PROJECT_NAME}/RobotState.cpp
  )
 
